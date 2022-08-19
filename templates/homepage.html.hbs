@@ -3,6 +3,7 @@
 <head>
     <meta charset="utf-8">
     <title>{{ pageTitle }}</title>
+    <link rel="shortcut icon" type="image/x-icon" href="https://go.dev/favicon.ico" />
     <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Roboto:300,300italic,700,700italic">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/milligram/1.3.0/milligram.min.css">
@@ -10,10 +11,14 @@
 </head>
 <body>
     <section class="container">
+        <br/>
+        <strong>Usage</strong>
+        <pre class="code prettyprint lang-shell prettyprinted"><code class="code-content">$ go get -u {{ host }}/&lt;MODULE&gt;</code></pre>
         <table>
             <thead>
                 <tr>
-                    <th>Library</th>
+                    <th>Name</th>
+                    <th>Module</th>
                     <th>Source Repository</th>
                 </tr>
             </thead>
@@ -21,13 +26,14 @@
                 {{#each repositories}}
                 <tr>
                     <td>
-                        <a href="https://pkg.go.dev/{{ host }}/{{ path }}">{{ library }}</a>
+                        <a href="https://pkg.go.dev/{{ host }}/{{ path }}" target="_blank">{{ library }}</a>
                         {{#if deprecated}}
                         <small><i>(Deprecated)</i></small>
                         <i class="deprecated fa-solid fa-triangle-exclamation" style="color: #f44336" data-tooltip="{{ deprecated }}"></i>
                         {{/if}}
                     </td>
-                    <td><a href="https://{{ repository }}">{{ repository }}</a></td>
+                    <td>{{ path }}</td>
+                    <td><a href="https://{{ repository }}" target="_blank">{{ repository }}</a></td>
                 </tr>
                 {{/each}}
             </tbody>

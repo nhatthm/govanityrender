@@ -1,0 +1,90 @@
+---
+
+name: Build docker image (dev)
+
+concurrency: "docker-dev"
+
+on:
+  push:
+    branches:
+      - master
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+  GO_LATEST_VERSION: "1.19.x"
+
+jobs:
+  test:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ ubuntu-latest, macos-latest ]
+        go-version: [ 1.18.x, 1.19.x ]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Install Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go-version }}
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Go cache
+        uses: actions/cache@v3
+        with:
+          # In order:
+          # * Module download cache
+          # * Build cache (Linux)
+          path: |
+            ~/go/pkg/mod
+            ~/.cache/go-build
+          key: ${{ runner.os }}-go-${{ matrix.go-version }}-cache-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-${{ matrix.go-version }}-cache
+
+      - name: Test
+        id: test
+        run: |
+          make test
+
+      - name: Upload code coverage (unit)
+        if: matrix.go-version == env.GO_LATEST_VERSION
+        uses: codecov/codecov-action@v3
+        with:
+          files: ./unit.coverprofile
+          flags: unittests-${{ runner.os }}
+          file: resources/docker/Dockerfile
+
+  #      - name: Upload code coverage (features)
+  #        if: matrix.go-version == env.GO_LATEST_VERSION
+  #        uses: codecov/codecov-action@v1
+  #        with:
+  #          file: ./features.coverprofile
+  #          flags: featurestests-${{ runner.os }}
+
+  build-and-push:
+    needs: test
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: true
+          file: resources/docker/Dockerfile
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev

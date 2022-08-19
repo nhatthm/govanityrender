@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+        <meta http-equiv="refresh" content="0; url=https://pkg.go.dev/{{ host }}/{{ path }}{{#if submodule }}/{{ submodule }}{{/if}}">
+        <meta name="go-import" content="{{ host }}/{{ path }} git https://{{ repository }}">
+        <meta name="go-source" content="{{ host }}/{{ path }} https://{{ repository }} https://{{ repository }}/tree/master{/dir} https://{{ repository }}/blob/master{/dir}/{file}#L{line}">
+    </head>
+    <body>
+        Nothing to see here; <a href="https://pkg.go.dev/{{ host }}/{{ path }}{{#if submodule }}/{{ submodule }}{{/if}}">see the package on pkg.go.dev</a>.
+    </body>
+</html>

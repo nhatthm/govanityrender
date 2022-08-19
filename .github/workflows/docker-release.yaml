@@ -1,6 +1,6 @@
 ---
 
-name: Build docker image (dev)
+name: Build docker image (release)
 
 concurrency: "docker-release"
 

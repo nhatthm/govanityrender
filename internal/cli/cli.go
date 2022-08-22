@@ -8,7 +8,8 @@ import (
 
 	"go.nhat.io/vanityrender/internal/config"
 	"go.nhat.io/vanityrender/internal/git"
-	"go.nhat.io/vanityrender/internal/renderer"
+	"go.nhat.io/vanityrender/internal/github"
+	"go.nhat.io/vanityrender/internal/site"
 	"go.nhat.io/vanityrender/templates"
 )
 
@@ -37,7 +38,7 @@ func Execute() int {
 }
 
 func runRender(configFile string, homepageTpl string, outputPath string) error {
-	cfg, err := config.HydrateFile(configFile, initConfigHydrators()...)
+	cfg, err := config.FromFile(configFile)
 	if err != nil {
 		return err
 	}
@@ -52,17 +53,22 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 		return err
 	}
 
-	r, err := renderer.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedRepository(), outputPath)
+	siteCfg, err := initSiteConfig(cfg)
 	if err != nil {
 		return err
 	}
 
-	return r.Render(cfg)
+	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedRepository(), outputPath)
+	if err != nil {
+		return err
+	}
+
+	return r.Render(*siteCfg)
 }
 
-func initConfigHydrators() []config.Hydrator {
-	return []config.Hydrator{
-		git.NewHydrator(),
+func initConfigHydrators() []site.Hydrator {
+	return []site.Hydrator{
+		github.NewHydrator(git.NewModuleFinder()),
 	}
 }
 
@@ -98,4 +104,30 @@ func initOutputDir(outputPath string) (string, error) {
 	}
 
 	return outputPath, nil
+}
+
+func initSiteConfig(cfg config.Config) (*site.Site, error) {
+	s := site.Site{
+		PageTitle:       cfg.PageTitle,
+		PageDescription: cfg.PageDescription,
+		Hostname:        cfg.Host,
+		Repositories:    make([]site.Repository, len(cfg.Repositories)),
+	}
+
+	for i, r := range cfg.Repositories {
+		s.Repositories[i] = site.Repository{
+			Name:          r.Name,
+			Path:          r.Path,
+			Deprecated:    r.Deprecated,
+			RepositoryURL: r.Repository,
+			Ref:           r.Ref,
+		}
+	}
+
+	err := site.Hydrate(&s, initConfigHydrators()...)
+	if err != nil {
+		return nil, err
+	}
+
+	return &s, nil
 }

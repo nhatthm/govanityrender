@@ -1,16 +1,22 @@
 package github
 
 import (
+	"context"
 	"fmt"
 	"path/filepath"
 	"sort"
 	"strings"
+	"sync"
 
 	"go.nhat.io/vanityrender/internal/module"
 	"go.nhat.io/vanityrender/internal/site"
 )
 
-const gitHubDomain = `https://github.com/`
+const (
+	gitHubDomain = `https://github.com/`
+
+	defaultNumWorkers = 5
+)
 
 var repositoryURLSanitizer = strings.NewReplacer(
 	"https://", "",
@@ -25,17 +31,60 @@ var _ site.Hydrator = (*Hydrator)(nil)
 // Hydrator is a config.Hydrator.
 type Hydrator struct {
 	finder module.Finder
+
+	numWorkers int
 }
 
 // Hydrate hydrates the configuration.
 func (h *Hydrator) Hydrate(s *site.Site) error {
-	for i := range s.Repositories {
-		if err := h.hydrateRepository(&s.Repositories[i]); err != nil {
-			return err
-		}
+	ch := make(chan *site.Repository, h.numWorkers*2)
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	wg := sync.WaitGroup{}
+	errMu := sync.Mutex{}
+	err := (error)(nil)
+
+	wg.Add(h.numWorkers)
+
+	for i := 0; i < h.numWorkers; i++ {
+		go func() {
+			defer wg.Done()
+
+			for {
+				select {
+				case <-ctx.Done():
+					return
+
+				case r, ok := <-ch:
+					if !ok {
+						return
+					}
+
+					if hErr := h.hydrateRepository(r); hErr != nil {
+						errMu.Lock()
+						err = hErr
+						errMu.Unlock()
+
+						cancel()
+					}
+				}
+			}
+		}()
 	}
 
-	return nil
+	go func() {
+		defer close(ch)
+
+		for i := range s.Repositories {
+			ch <- &s.Repositories[i]
+		}
+	}()
+
+	wg.Wait()
+
+	return err
 }
 
 func (h *Hydrator) hydrateRepository(r *site.Repository) error {
@@ -94,7 +143,8 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 // NewHydrator initiates a new config.Hydrator.
 func NewHydrator(finder module.Finder) *Hydrator {
 	return &Hydrator{
-		finder: finder,
+		finder:     finder,
+		numWorkers: defaultNumWorkers,
 	}
 }
 

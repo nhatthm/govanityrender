@@ -54,8 +54,9 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 	r.RepositoryName = repositoryURLSanitizer.Replace(repoURL)
 
 	modules := make([]site.Module, 0, len(pathVersions))
+	latestVersion := module.Version{}
 
-	for path := range pathVersions {
+	for path, version := range pathVersions {
 		modulePath := r.Path
 		if string(path) != "." {
 			modulePath = filepath.Join(r.Path, string(path))
@@ -70,12 +71,21 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 			DirectoryURL:  fmt.Sprintf("%s/tree/master{/dir}", r.RepositoryURL),
 			FileURL:       fmt.Sprintf("%s/blob/master{/dir}/{file}#L{line}", r.RepositoryURL),
 		})
+
+		if path.IsRoot() && latestVersion.LessThan(version) {
+			latestVersion = version
+		}
 	}
 
 	sort.Slice(modules, func(i, j int) bool {
 		return modules[i].Path < modules[j].Path
 	})
 
+	if latestVersion.Major > 1 {
+		r.Path = fmt.Sprintf("%s/v%d", r.Path, latestVersion.Major)
+	}
+
+	r.LatestVersion = latestVersion.String()
 	r.Modules = modules
 
 	return nil

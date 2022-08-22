@@ -27,11 +27,37 @@ const goMod = `go.mod`
 // Path is the path to the module.
 type Path string
 
+// IsRoot returns true if the path is the root path.
+func (p Path) IsRoot() bool {
+	return p == "." || VersionRegExp.MatchString(fmt.Sprintf("%s.0.0", p))
+}
+
 // Version is the version of the module.
 type Version struct {
 	Major int
 	Minor int
 	Patch int
+}
+
+// LessThan returns true if the left version is less than the right version.
+func (v Version) LessThan(v2 Version) bool {
+	if v.Major < v2.Major {
+		return true
+	}
+
+	if v.Major > v2.Major {
+		return false
+	}
+
+	if v.Minor < v2.Minor {
+		return true
+	}
+
+	if v.Minor > v2.Minor {
+		return false
+	}
+
+	return v.Patch < v2.Patch
 }
 
 // String returns the string representation of the version.

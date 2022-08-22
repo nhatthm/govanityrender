@@ -34,7 +34,7 @@ func TestModuleFinder_Find_Success(t *testing.T) {
 
 	expected := map[module.Path]module.Version{
 		".":          module.NewVersionFromString("v1.0.0"),
-		"v2":         module.NewVersionFromString("v2.1.0"),
+		"v2":         module.NewVersionFromString("v2.10.0"),
 		"contrib":    module.NewVersionFromString("v0.2.0"),
 		"contrib/v2": module.NewVersionFromString("v2.0.0"),
 		"test":       module.NewVersionFromString("v0.2.0"),
@@ -59,10 +59,16 @@ func bumpExampleModule() func(t *testing.T, r *gogit.Repository, dir string) {
 
 		tagHead(t, r, "contrib/v2.0.0")
 
-		// Bump main module version to v2.1.0.
-		writeFile(t, filepath.Join(dir, "VERSION"), "v2.1.0")
+		// Bump main module version to v2.2.0.
+		writeFile(t, filepath.Join(dir, "VERSION"), "v2.2.0")
 		commitAndPush(t, r, "Bump VERSION")
 
-		tagHead(t, r, "v2.1.0")
+		tagHead(t, r, "v2.2.0")
+
+		// Bump main module version to v2.10.0.
+		writeFile(t, filepath.Join(dir, "VERSION"), "v2.10.0")
+		commitAndPush(t, r, "Bump VERSION")
+
+		tagHead(t, r, "v2.10.0")
 	}
 }

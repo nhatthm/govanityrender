@@ -1,8 +1,6 @@
 package git
 
 import (
-	"sort"
-
 	"go.nhat.io/vanityrender/internal/module"
 )
 
@@ -27,14 +25,15 @@ func (f *ModuleFinder) Find(loc, ref string) (map[module.Path]module.Version, er
 	}
 
 	versions = append(versions, goModVersions...)
-	sort.Strings(versions)
 
 	result := make(map[module.Path]module.Version, len(versions))
 
 	for _, s := range versions {
 		k, v := module.PathVersion(s)
 
-		result[k] = v
+		if curVersion, ok := result[k]; !ok || curVersion.LessThan(v) {
+			result[k] = v
+		}
 	}
 
 	return result, nil

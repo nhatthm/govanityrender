@@ -16,7 +16,7 @@ func TestHydrator_Hydrate(t *testing.T) {
 
 	pathVersions := map[module.Path]module.Version{
 		".":          module.NewVersionFromString("v1.0.0"),
-		"v2":         module.NewVersionFromString("v2.1.0"),
+		"v2":         module.NewVersionFromString("v2.10.0"),
 		"contrib":    module.NewVersionFromString("v0.2.0"),
 		"contrib/v2": module.NewVersionFromString("v2.0.0"),
 		"test":       module.NewVersionFromString("v0.2.0"),
@@ -118,8 +118,9 @@ func TestHydrator_Hydrate(t *testing.T) {
 				Repositories: []site.Repository{{
 					RepositoryURL:  "https://github.com/org/repository",
 					RepositoryName: "github.com/org/repository",
-					Path:           "repository",
+					Path:           "repository/v2",
 					Modules:        expectedModules,
+					LatestVersion:  "v2.10.0",
 				}},
 			},
 		},
@@ -136,8 +137,9 @@ func TestHydrator_Hydrate(t *testing.T) {
 				Repositories: []site.Repository{{
 					RepositoryURL:  "https://github.com/org/repository",
 					RepositoryName: "github.com/org/repository",
-					Path:           "repository",
+					Path:           "repository/v2",
 					Modules:        expectedModules,
+					LatestVersion:  "v2.10.0",
 				}},
 			},
 		},
@@ -154,8 +156,9 @@ func TestHydrator_Hydrate(t *testing.T) {
 				Repositories: []site.Repository{{
 					RepositoryURL:  "https://github.com/org/repository",
 					RepositoryName: "github.com/org/repository",
-					Path:           "repository",
+					Path:           "repository/v2",
 					Modules:        expectedModules,
+					LatestVersion:  "v2.10.0",
 				}},
 			},
 		},
@@ -173,8 +176,9 @@ func TestHydrator_Hydrate(t *testing.T) {
 				Repositories: []site.Repository{{
 					RepositoryURL:  "https://github.com/org/repository",
 					RepositoryName: "github.com/org/repository",
-					Path:           "repository",
+					Path:           "repository/v2",
 					Modules:        expectedModules,
+					LatestVersion:  "v2.10.0",
 				}},
 			},
 		},

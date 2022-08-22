@@ -20,6 +20,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Module</th>
+                    <th>Latest Release</th>
                     <th>Source Repository</th>
                 </tr>
             </thead>
@@ -34,6 +35,7 @@
                         {{/if}}
                     </td>
                     <td>{{ path }}</td>
+                    <td>{{ latestVersion }}</td>
                     <td><a href="{{ repositoryURL }}" target="_blank">{{ repositoryName }}</a></td>
                 </tr>
                 {{/each}}

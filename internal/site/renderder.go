@@ -50,6 +50,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 			"deprecated":     r.Deprecated,
 			"repositoryURL":  r.RepositoryURL,
 			"repositoryName": r.RepositoryName,
+			"latestVersion":  r.LatestVersion,
 		}
 	}
 

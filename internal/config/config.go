@@ -18,45 +18,21 @@ const (
 	ErrMissingHost = xerrors.Error("missing host")
 )
 
-const defaultRef = "master"
-
 // Config is the configuration for the application.
 type Config struct {
-	PageTitle    string       `yaml:"page_title" toml:"page_title" json:"page_title"`
-	Host         string       `yaml:"host" toml:"host" json:"host"`
-	Repositories []Repository `yaml:"repositories" toml:"repositories" json:"repositories"`
+	PageTitle       string       `json:"page_title"`
+	PageDescription string       `json:"page_description"`
+	Host            string       `json:"host"`
+	Repositories    []Repository `json:"repositories"`
 }
 
 // Repository is the configuration for a repository.
 type Repository struct {
-	Library    string   `yaml:"library" toml:"library" json:"library"`
-	Path       string   `yaml:"path" toml:"path" json:"path"`
-	Repository string   `yaml:"repository" toml:"repository" json:"repository"`
-	Ref        string   `yaml:"ref" toml:"ref" json:"ref"`
-	Version    string   `yaml:"-" toml:"-" json:"-"`
-	Deprecated string   `yaml:"deprecated" toml:"deprecated" json:"deprecated"`
-	Modules    []Module `yaml:"-" toml:"-" json:"-"`
-}
-
-// Module is the configuration for a module.
-type Module struct {
-	Path string
-}
-
-// HydrateFile reads the configuration from a file and hydrates it.
-func HydrateFile(file string, hydrators ...Hydrator) (Config, error) {
-	cfg, err := FromFile(file)
-	if err != nil {
-		return Config{}, err
-	}
-
-	for _, h := range hydrators {
-		if err := h.Hydrate(&cfg); err != nil {
-			return Config{}, err
-		}
-	}
-
-	return cfg, nil
+	Name       string `json:"name"`
+	Path       string `json:"path"`
+	Repository string `json:"repository"`
+	Ref        string `json:"ref"`
+	Deprecated string `json:"deprecated"`
 }
 
 // FromFile reads the configuration from a file.
@@ -99,15 +75,5 @@ func Validate(config Config) error {
 func hydrateConfig(cfg *Config) {
 	if len(cfg.PageTitle) == 0 {
 		cfg.PageTitle = cfg.Host
-	}
-
-	for i := range cfg.Repositories {
-		hydrateRepository(&cfg.Repositories[i])
-	}
-}
-
-func hydrateRepository(r *Repository) {
-	if len(r.Ref) == 0 {
-		r.Ref = defaultRef
 	}
 }

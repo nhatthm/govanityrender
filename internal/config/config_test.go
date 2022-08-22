@@ -22,7 +22,7 @@ func TestFromFile(t *testing.T) {
     "host": "go.nhat.io",
     "repositories": [
         {
-            "library": "Vanity Renderder",
+            "name": "Vanity Renderder",
             "path": "vanityrender",
             "repository": "https://github.com/nhatthm/govanityrender"
         }
@@ -63,11 +63,9 @@ func TestFromFile(t *testing.T) {
 				Host:      "go.nhat.io",
 				Repositories: []config.Repository{
 					{
-						Library:    "Vanity Renderder",
+						Name:       "Vanity Renderder",
 						Path:       "vanityrender",
 						Repository: "https://github.com/nhatthm/govanityrender",
-						Ref:        "master",
-						Version:    "",
 					},
 				},
 			},

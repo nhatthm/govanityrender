@@ -16,6 +16,7 @@ type Repository struct {
 	RepositoryURL  string
 	RepositoryName string
 	Ref            string
+	LatestVersion  string
 	Modules        []Module
 }
 

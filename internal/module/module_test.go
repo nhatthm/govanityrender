@@ -8,6 +8,117 @@ import (
 	"go.nhat.io/vanityrender/internal/module"
 )
 
+func TestPath_IsRoot(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario string
+		path     module.Path
+		expected bool
+	}{
+		{
+			scenario: "empty string",
+			path:     "",
+			expected: false,
+		},
+		{
+			scenario: "root",
+			path:     ".",
+			expected: true,
+		},
+		{
+			scenario: "version",
+			path:     "v2",
+			expected: true,
+		},
+		{
+			scenario: "submodule",
+			path:     "contrib",
+			expected: false,
+		},
+		{
+			scenario: "submodule/version",
+			path:     "contrib/v2",
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tc.expected, tc.path.IsRoot())
+		})
+	}
+}
+
+func TestVersion_LessThan(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario string
+		left     module.Version
+		right    module.Version
+		expected bool
+	}{
+		{
+			scenario: "major version less than",
+			left:     module.NewVersion(1, 0, 0),
+			right:    module.NewVersion(2, 0, 0),
+			expected: true,
+		},
+		{
+			scenario: "major version greater than",
+			left:     module.NewVersion(2, 0, 0),
+			right:    module.NewVersion(1, 0, 0),
+			expected: false,
+		},
+		{
+			scenario: "minor version less than",
+			left:     module.NewVersion(1, 1, 0),
+			right:    module.NewVersion(1, 2, 0),
+			expected: true,
+		},
+		{
+			scenario: "minor version greater than",
+			left:     module.NewVersion(1, 2, 0),
+			right:    module.NewVersion(1, 1, 0),
+			expected: false,
+		},
+		{
+			scenario: "patch version less than",
+			left:     module.NewVersion(1, 2, 1),
+			right:    module.NewVersion(1, 2, 2),
+			expected: true,
+		},
+		{
+			scenario: "patch version greater than",
+			left:     module.NewVersion(1, 2, 2),
+			right:    module.NewVersion(1, 2, 1),
+			expected: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tc.expected, tc.left.LessThan(tc.right))
+		})
+	}
+}
+
+func TestVersion_String(t *testing.T) {
+	t.Parallel()
+
+	actual := module.NewVersion(1, 2, 3).String()
+	expected := "v1.2.3"
+
+	assert.Equal(t, expected, actual)
+}
+
 func TestPathVersion(t *testing.T) {
 	t.Parallel()
 

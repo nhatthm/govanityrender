@@ -73,6 +73,7 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 				Path:           "vanityrender",
 				RepositoryURL:  "https://github.com/nhatthm/govanityrender",
 				RepositoryName: "github.com/nhatthm/govanityrender",
+				LatestVersion:  "v0.1.0",
 				Modules: []site.Module{{
 					Path:          "vanityrender",
 					ImportPrefix:  "vanityrender",
@@ -88,6 +89,7 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 				Path:           "testcontainers-registry",
 				RepositoryURL:  "https://github.com/nhatthm/testcontainers-go-registry",
 				RepositoryName: "github.com/nhatthm/testcontainers-go-registry",
+				LatestVersion:  "v0.6.0",
 				Modules: []site.Module{{
 					Path:          "testcontainers-registry",
 					ImportPrefix:  "testcontainers-registry",
@@ -144,6 +146,7 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 				RepositoryURL:  "https://github.com/nhatthm/testcontainers-go-registry",
 				RepositoryName: "github.com/nhatthm/testcontainers-go-registry",
 				Deprecated:     "Use go.nhat.io/testcontainers-registry instead",
+				LatestVersion:  "v0.4.0",
 				Modules: []site.Module{{
 					Path:          "testcontainers-go-registry",
 					ImportPrefix:  "testcontainers-go-registry",

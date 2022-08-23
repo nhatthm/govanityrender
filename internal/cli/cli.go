@@ -1,14 +1,17 @@
 package cli
 
 import (
+	"crypto/sha1" // nolint: gosec
 	"flag"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
 	"go.nhat.io/vanityrender/internal/config"
 	"go.nhat.io/vanityrender/internal/git"
 	"go.nhat.io/vanityrender/internal/github"
+	"go.nhat.io/vanityrender/internal/service/sitecache"
 	"go.nhat.io/vanityrender/internal/site"
 	"go.nhat.io/vanityrender/templates"
 )
@@ -38,7 +41,7 @@ func Execute() int {
 }
 
 func runRender(configFile string, homepageTpl string, outputPath string) error {
-	cfg, err := config.FromFile(configFile)
+	checksum, err := checksum(configFile)
 	if err != nil {
 		return err
 	}
@@ -53,12 +56,12 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 		return err
 	}
 
-	siteCfg, err := initSiteConfig(cfg)
+	siteCfg, err := initSiteConfig(configFile, checksum)
 	if err != nil {
 		return err
 	}
 
-	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedRepository(), outputPath)
+	r, err := initRenderer(homepageSrc, outputPath, checksum)
 	if err != nil {
 		return err
 	}
@@ -66,8 +69,9 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 	return r.Render(*siteCfg)
 }
 
-func initConfigHydrators() []site.Hydrator {
+func initConfigHydrators(checksum string) []site.Hydrator {
 	return []site.Hydrator{
+		sitecache.NewMetadataHydrator(checksum),
 		github.NewHydrator(git.NewModuleFinder()),
 	}
 }
@@ -106,7 +110,12 @@ func initOutputDir(outputPath string) (string, error) {
 	return outputPath, nil
 }
 
-func initSiteConfig(cfg config.Config) (*site.Site, error) {
+func initSiteConfig(configFile, checksum string) (*site.Site, error) {
+	cfg, err := config.FromFile(configFile)
+	if err != nil {
+		return nil, err
+	}
+
 	s := site.Site{
 		PageTitle:       cfg.PageTitle,
 		PageDescription: cfg.PageDescription,
@@ -124,10 +133,41 @@ func initSiteConfig(cfg config.Config) (*site.Site, error) {
 		}
 	}
 
-	err := site.Hydrate(&s, initConfigHydrators()...)
+	err = site.Hydrate(&s, initConfigHydrators(checksum)...)
 	if err != nil {
 		return nil, err
 	}
 
 	return &s, nil
+}
+
+func initRenderer(homepageSrc, outputPath, checksum string) (site.Renderder, error) {
+	var r site.Renderder
+
+	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedRepository(), outputPath)
+	if err != nil {
+		return nil, err
+	}
+
+	r = sitecache.NewRenderder(r, outputPath, checksum)
+
+	return r, nil
+}
+
+func checksum(path string) (string, error) {
+	f, err := os.Open(filepath.Clean(path))
+	if err != nil {
+		return "", fmt.Errorf("could not open config file: %w", err)
+	}
+
+	defer func() {
+		_ = f.Close() // nolint: errcheck
+	}()
+
+	h := sha1.New() // nolint: gosec
+	if _, err := io.Copy(h, f); err != nil {
+		return "", fmt.Errorf("could not calculate checksum: %w", err)
+	}
+
+	return fmt.Sprintf("%x", h.Sum(nil)), nil
 }

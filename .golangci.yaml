@@ -30,6 +30,7 @@ linters:
     - gomnd
     - ifshort
     - interfacer
+    - ireturn
     - lll
     - maligned
     - nolintlint # https://github.com/golangci/golangci-lint/issues/3063

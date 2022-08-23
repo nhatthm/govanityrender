@@ -88,3 +88,6 @@ jobs:
           push: true
           file: resources/docker/Dockerfile
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
+          build-args: |
+            VERSION=dev
+            USER=${{ github.actor }}

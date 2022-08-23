@@ -1,5 +1,11 @@
 FROM golang:1.19 AS builder
 
+ARG VERSION=dev
+ARG USER=""
+
+ENV VERSION=$VERSION
+ENV USER=$USER
+
 WORKDIR /app/
 
 COPY ../.. .

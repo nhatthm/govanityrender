@@ -11,6 +11,6 @@ fi
 
 buildUser=${GITHUB_ACTOR:-${USER:-$(whoami)}}
 buildDate=$(date +%FT%T%Z)
-versionPkg=github.com/hellofresh/hfkcat/internal/version
+versionPkg=go.nhat.io/vanityrender/internal/version
 
 echo -X "$versionPkg".version="$VERSION" -X "$versionPkg".branch="$branch" -X "$versionPkg".revision="$revision" -X "$versionPkg".buildUser="$buildUser" -X "$versionPkg".buildDate="$buildDate"

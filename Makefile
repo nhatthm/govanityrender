@@ -26,7 +26,7 @@ lint: bin/$(GOLANGCI_LINT) $(VENDOR_DIR)
 	@bin/$(GOLANGCI_LINT) run -c .golangci.yaml
 
 .PHONY: build
-build: $(VENDOR_DIR)
+build:
 	@$(GO) build -ldflags "$(shell ./resources/scripts/build_args.sh)" -o $(BUILD_DIR)/$(APP) cmd/*
 
 .PHONY: test

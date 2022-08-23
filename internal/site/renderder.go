@@ -1,6 +1,7 @@
 package site
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -8,7 +9,10 @@ import (
 	"github.com/aymerick/raymond"
 )
 
-const indexFile = `index.html`
+const (
+	indexFile    = `index.html`
+	metadataFile = `metadata.v1.json`
+)
 
 // Renderder is the interface for rendering.
 type Renderder interface {
@@ -34,6 +38,10 @@ func (h *HandlebarsRenderder) Render(s Site) error {
 		if err := h.renderRepository(s.Hostname, r); err != nil {
 			return err
 		}
+	}
+
+	if err := h.renderMetadata(s); err != nil {
+		return fmt.Errorf("could not render metadata: %w", err)
 	}
 
 	return nil
@@ -109,6 +117,17 @@ func (h *HandlebarsRenderder) renderModule(host string, m Module) error {
 	}
 
 	return nil
+}
+
+func (h *HandlebarsRenderder) renderMetadata(s Site) error {
+	data, err := json.MarshalIndent(s, "", "  ")
+	if err != nil {
+		return fmt.Errorf("could not marshal metadata: %w", err)
+	}
+
+	metadataFile := filepath.Join(h.outputDir, metadataFile)
+
+	return os.WriteFile(metadataFile, data, 0o644) // nolint: gosec
 }
 
 // NewHandlebarsRenderder creates a new HandlebarsRenderder.

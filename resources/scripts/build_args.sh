@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+revision="$REVISION"
+
 # Skip branch/revision with missing git repo.
 if [[ -d .git ]] || git rev-parse --git-dir >/dev/null 2>&1; then
 	branch=$(git symbolic-ref HEAD 2>/dev/null)

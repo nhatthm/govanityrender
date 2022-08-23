@@ -47,9 +47,9 @@ func (r *Renderder) renderMetadata(s site.Site) error {
 		return fmt.Errorf("could not marshal metadata: %w", err)
 	}
 
-	metadataFile := filepath.Join(r.outputDir, metadataFile)
+	cacheFile := filepath.Join(r.outputDir, metadataFile)
 
-	if err := os.WriteFile(metadataFile, data, 0o644); err != nil { // nolint: gosec
+	if err := os.WriteFile(cacheFile, data, 0o644); err != nil { // nolint: gosec
 		return err
 	}
 

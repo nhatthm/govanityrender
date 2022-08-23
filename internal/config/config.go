@@ -23,6 +23,7 @@ type Config struct {
 	PageTitle       string       `json:"page_title"`
 	PageDescription string       `json:"page_description"`
 	Host            string       `json:"host"`
+	SourceURL       string       `json:"source_url"`
 	Repositories    []Repository `json:"repositories"`
 }
 

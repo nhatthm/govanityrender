@@ -64,6 +64,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 		"pageTitle":       s.PageTitle,
 		"pageDescription": s.PageDescription,
 		"host":            s.Hostname,
+		"sourceURL":       s.SourceURL,
 		"repositories":    repositories,
 		"renderer":        version.Info(),
 	}

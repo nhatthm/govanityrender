@@ -36,7 +36,7 @@ func Execute() int {
 
 	flag.Parse()
 
-	modules := strings.Split(modulesVal, ",")
+	modules := split(strings.Trim(modulesVal, "\r\n "), ",")
 
 	err := runRender(colorable.NewColorableStdout(), configFile, homepageTpl, outputPath, modules)
 	if err != nil {
@@ -182,4 +182,16 @@ func checksum(path string) (string, error) {
 	}
 
 	return fmt.Sprintf("%x", h.Sum(nil)), nil
+}
+
+func split(s, sep string) []string {
+	var r []string
+
+	for _, str := range strings.Split(s, sep) {
+		if str != "" {
+			r = append(r, str)
+		}
+	}
+
+	return r
 }

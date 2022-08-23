@@ -25,16 +25,16 @@ func TestHydrator_Hydrate(t *testing.T) { // nolint: maintidx
 	}{
 		{
 			scenario:      "no modules - upstream error",
-			mockUpstream:  mockHydrateError(errors.New("upstream error")),
 			mockCache:     nopHydrator,
+			mockUpstream:  mockHydrateError(errors.New("upstream error")),
 			expectedError: "upstream error",
 		},
 		{
-			scenario: "no modules - upstream success",
+			scenario:  "no modules - upstream success",
+			mockCache: nopHydrator,
 			mockUpstream: mockHydrateSuccess(func(_ *testing.T, s *site.Site) {
 				s.PageTitle = "test"
 			}),
-			mockCache:      nopHydrator,
 			expectedResult: site.Site{PageTitle: "test"},
 		},
 		{
@@ -440,6 +440,8 @@ var nopHydrator = func(t *testing.T) site.Hydrator {
 	t.Helper()
 
 	return hydrateFunc(func(s *site.Site) error {
+		t.Error("unexpected call")
+
 		return nil
 	})
 }

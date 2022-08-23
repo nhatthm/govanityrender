@@ -2,8 +2,6 @@ name: lint
 
 on:
   push:
-    tags:
-      - v*
     branches:
       - master
       - main
@@ -14,8 +12,8 @@ env:
   GOLANGCI_LINT_VERSION: v1.48.0
 
 jobs:
-  golangci:
-    name: golangci-lint
+  lint:
+    name: lint
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

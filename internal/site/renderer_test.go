@@ -1,6 +1,7 @@
 package site_test
 
 import (
+	"bytes"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -199,17 +200,7 @@ func assertOutput(t *testing.T, expectedDir, actualDir string) {
 			return nil
 		}
 
-		expectedContent, err := os.ReadFile(filepath.Clean(path))
-		if err != nil {
-			return fmt.Errorf("could not read file %q: %w", path, err)
-		}
-
-		actualContent, err := os.ReadFile(filepath.Clean(actualFile))
-		if err != nil {
-			return fmt.Errorf("could not read file %q: %w", actualFile, err)
-		}
-
-		assert.Equal(t, string(expectedContent), string(actualContent))
+		assert.Equal(t, fileContent(t, path), fileContent(t, actualFile))
 
 		return nil
 	})
@@ -232,4 +223,13 @@ func assertOutput(t *testing.T, expectedDir, actualDir string) {
 	require.NoError(t, err)
 
 	assert.Equal(t, expectedFiles, actualFiles)
+}
+
+func fileContent(t *testing.T, path string) string {
+	t.Helper()
+
+	data, err := os.ReadFile(filepath.Clean(path))
+	require.NoErrorf(t, err, "could not read file: %s", path, err)
+
+	return string(bytes.TrimRight(data, "\n"))
 }

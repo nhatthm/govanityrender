@@ -69,9 +69,9 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 	return r.Render(*siteCfg)
 }
 
-func initConfigHydrators(checksum string) []site.Hydrator {
+func initConfigHydrators(_ string) []site.Hydrator {
 	return []site.Hydrator{
-		sitecache.NewMetadataHydrator(checksum),
+		// sitecache.NewMetadataHydrator(checksum),
 		github.NewHydrator(git.NewModuleFinder()),
 	}
 }

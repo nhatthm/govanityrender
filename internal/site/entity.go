@@ -5,6 +5,7 @@ type Site struct {
 	PageTitle       string       `json:"page_title"`
 	PageDescription string       `json:"page_description"`
 	Hostname        string       `json:"hostname"`
+	SourceURL       string       `json:"source_url"`
 	Repositories    []Repository `json:"repositories"`
 }
 

@@ -58,6 +58,7 @@ func TestRenderder_Render_Success(t *testing.T) {
   "page_title": "test",
   "page_description": "",
   "hostname": "",
+  "source_url": "",
   "repositories": null
 }`
 

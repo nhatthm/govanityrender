@@ -68,6 +68,7 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 		PageTitle:       "go.nhat.io",
 		PageDescription: "Open Source Go Modules",
 		Hostname:        "go.nhat.io",
+		SourceURL:       "github.com/nhatthm/govanityrender",
 		Repositories: []site.Repository{
 			{
 				Name:           "Vanity Renderder",

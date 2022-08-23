@@ -132,6 +132,7 @@ func initSiteConfig(out io.Writer, configFile, checksum string, modules []string
 		PageTitle:       cfg.PageTitle,
 		PageDescription: cfg.PageDescription,
 		Hostname:        cfg.Host,
+		SourceURL:       cfg.SourceURL,
 		Repositories:    make([]site.Repository, len(cfg.Repositories)),
 	}
 

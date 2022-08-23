@@ -27,6 +27,8 @@ $ vanityrender --help
     	config file (default "config.json")
   -homepage-tpl string
     	template file
+  -modules string
+    	rebuild only the listed modules, comma separated
   -out string
     	output path (default "build")
 ```

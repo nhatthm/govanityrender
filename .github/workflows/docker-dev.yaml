@@ -90,5 +90,5 @@ jobs:
           tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:dev
           build-args: |
             VERSION=dev
-            USER=${{ env.GITHUB_ACTOR }}
-            REVISION=${{ env.GITHUB_SHA }}
+            USER=${{ github.actor }}
+            REVISION=${{ github.sha }}

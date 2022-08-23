@@ -41,5 +41,5 @@ jobs:
             ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           build-args: |
             VERSION=dev
-            USER=${{ env.GITHUB_ACTOR }}
-            REVISION=${{ env.GITHUB_SHA }}
+            USER=${{ github.actor }}
+            REVISION=${{ github.sha }}

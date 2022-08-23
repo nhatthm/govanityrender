@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/aymerick/raymond"
+
+	"go.nhat.io/vanityrender/internal/version"
 )
 
 const indexFile = `index.html`
@@ -59,6 +61,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 		"pageDescription": s.PageDescription,
 		"host":            s.Hostname,
 		"repositories":    repositories,
+		"renderer":        version.Info(),
 	}
 
 	result, err := h.homepageTpl.Exec(inputs)

@@ -27,7 +27,7 @@ lint: bin/$(GOLANGCI_LINT) $(VENDOR_DIR)
 
 .PHONY: build
 build: $(VENDOR_DIR)
-	@$(GO) build -o $(BUILD_DIR)/$(APP) cmd/*
+	@$(GO) build -ldflags "$(shell ./resources/scripts/build_args.sh)" -o $(BUILD_DIR)/$(APP) cmd/*
 
 .PHONY: test
 test: test-unit

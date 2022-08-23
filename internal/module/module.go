@@ -20,6 +20,8 @@ var (
 	PathVersionRegExp = regexp.MustCompile(`^([a-zA-Z0-9]+([a-zA-Z0-9_/]+)?)?v\d+\.\d+\.\d+$`)
 	// VersionRegExp matches a version string.
 	VersionRegExp = regexp.MustCompile(`^v?(\d+)\.(\d+)\.(\d+)$`)
+	// MajorVersionRegExp matches a major version string.
+	MajorVersionRegExp = regexp.MustCompile(`^v?(\d+)$`)
 )
 
 const goMod = `go.mod`
@@ -83,7 +85,7 @@ func PathVersion(s string) (Path, Version) {
 		}
 
 		if version.Major > 1 {
-			path = Path(strings.TrimLeft(fmt.Sprintf("%s/v%d", strings.TrimLeft(string(path), "."), version.Major), "/"))
+			path = Path(PathWithVersion(path, version))
 		}
 
 		return path, version
@@ -123,4 +125,29 @@ func NewVersion(major, minor, patch int) Version {
 		Minor: minor,
 		Patch: patch,
 	}
+}
+
+// PathWithVersion returns the path with the version.
+func PathWithVersion[P ~string](path P, v Version) string {
+	return strings.TrimLeft(fmt.Sprintf("%s/v%d", strings.TrimLeft(string(path), "."), v.Major), "/")
+}
+
+// PathWithoutVersion returns the path without the version.
+func PathWithoutVersion[P ~string](path P) string {
+	p := string(path)
+
+	i := strings.LastIndex(p, "/")
+	if i == -1 {
+		if MajorVersionRegExp.MatchString(p) {
+			return "."
+		}
+
+		return p
+	}
+
+	if v := p[i+1:]; MajorVersionRegExp.MatchString(v) {
+		return p[:i]
+	}
+
+	return p
 }

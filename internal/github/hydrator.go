@@ -131,7 +131,7 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 	})
 
 	if latestVersion.Major > 1 {
-		r.Path = fmt.Sprintf("%s/v%d", r.Path, latestVersion.Major)
+		r.Path = module.PathWithVersion(r.Path, latestVersion)
 	}
 
 	r.LatestVersion = latestVersion.String()

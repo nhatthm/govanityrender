@@ -7,11 +7,13 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"go.nhat.io/vanityrender/internal/config"
 	"go.nhat.io/vanityrender/internal/git"
 	"go.nhat.io/vanityrender/internal/github"
 	"go.nhat.io/vanityrender/internal/service/sitecache"
+	"go.nhat.io/vanityrender/internal/service/sitefragment"
 	"go.nhat.io/vanityrender/internal/site"
 	"go.nhat.io/vanityrender/templates"
 )
@@ -22,15 +24,19 @@ func Execute() int {
 		configFile  string
 		homepageTpl string
 		outputPath  string
+		modulesVal  string
 	)
 
 	flag.StringVar(&configFile, "config", "config.json", "config file")
 	flag.StringVar(&homepageTpl, "homepage-tpl", "", "template file")
 	flag.StringVar(&outputPath, "out", "build", "output path")
+	flag.StringVar(&modulesVal, "modules", "", "rebuild only the listed modules, comma separated")
 
 	flag.Parse()
 
-	err := runRender(configFile, homepageTpl, outputPath)
+	modules := strings.Split(modulesVal, ",")
+
+	err := runRender(configFile, homepageTpl, outputPath, modules)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 
@@ -40,7 +46,7 @@ func Execute() int {
 	return 0
 }
 
-func runRender(configFile string, homepageTpl string, outputPath string) error {
+func runRender(configFile string, homepageTpl string, outputPath string, modules []string) error {
 	checksum, err := checksum(configFile)
 	if err != nil {
 		return err
@@ -56,7 +62,7 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 		return err
 	}
 
-	siteCfg, err := initSiteConfig(configFile, checksum)
+	siteCfg, err := initSiteConfig(configFile, checksum, modules)
 	if err != nil {
 		return err
 	}
@@ -69,10 +75,13 @@ func runRender(configFile string, homepageTpl string, outputPath string) error {
 	return r.Render(*siteCfg)
 }
 
-func initConfigHydrators(_ string) []site.Hydrator {
+func initConfigHydrators(checksum string, modules []string) []site.Hydrator {
 	return []site.Hydrator{
-		// sitecache.NewMetadataHydrator(checksum),
-		github.NewHydrator(git.NewModuleFinder()),
+		sitefragment.NewHydrator(
+			sitecache.NewMetadataHydrator(checksum),
+			github.NewHydrator(git.NewModuleFinder()),
+			modules...,
+		),
 	}
 }
 
@@ -110,7 +119,7 @@ func initOutputDir(outputPath string) (string, error) {
 	return outputPath, nil
 }
 
-func initSiteConfig(configFile, checksum string) (*site.Site, error) {
+func initSiteConfig(configFile, checksum string, modules []string) (*site.Site, error) {
 	cfg, err := config.FromFile(configFile)
 	if err != nil {
 		return nil, err
@@ -133,7 +142,7 @@ func initSiteConfig(configFile, checksum string) (*site.Site, error) {
 		}
 	}
 
-	err = site.Hydrate(&s, initConfigHydrators(checksum)...)
+	err = site.Hydrate(&s, initConfigHydrators(checksum, modules)...)
 	if err != nil {
 		return nil, err
 	}

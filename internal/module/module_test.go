@@ -186,3 +186,103 @@ func TestPathVersion(t *testing.T) {
 		})
 	}
 }
+
+func TestPathWithVersion(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario string
+		path     string
+		version  module.Version
+		expected string
+	}{
+		{
+			scenario: "empty path",
+			path:     "",
+			version:  module.NewVersion(1, 2, 3),
+			expected: "v1",
+		},
+		{
+			scenario: "path is dot",
+			path:     ".",
+			version:  module.NewVersion(1, 2, 3),
+			expected: "v1",
+		},
+		{
+			scenario: "simple path",
+			path:     "contrib",
+			version:  module.NewVersion(1, 2, 3),
+			expected: "contrib/v1",
+		},
+		{
+			scenario: "deep path",
+			path:     "contrib/test",
+			version:  module.NewVersion(1, 2, 3),
+			expected: "contrib/test/v1",
+		},
+		{
+			scenario: "leading slash",
+			path:     "/contrib/test",
+			version:  module.NewVersion(1, 2, 3),
+			expected: "contrib/test/v1",
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			actual := module.PathWithVersion(tc.path, tc.version)
+
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}
+
+func TestPathWithoutVersion(t *testing.T) {
+	t.Parallel()
+
+	testCases := []struct {
+		scenario string
+		path     string
+		expected string
+	}{
+		{
+			scenario: "empty path",
+			path:     "",
+			expected: "",
+		},
+		{
+			scenario: "dot path",
+			path:     ".",
+			expected: ".",
+		},
+		{
+			scenario: "only version",
+			path:     "v2",
+			expected: ".",
+		},
+		{
+			scenario: "simple path with version",
+			path:     "contrib/v2",
+			expected: "contrib",
+		},
+		{
+			scenario: "deep path with version",
+			path:     "contrib/test/v2",
+			expected: "contrib/test",
+		},
+	}
+
+	for _, tc := range testCases {
+		tc := tc
+		t.Run(tc.scenario, func(t *testing.T) {
+			t.Parallel()
+
+			actual := module.PathWithoutVersion(tc.path)
+
+			assert.Equal(t, tc.expected, actual)
+		})
+	}
+}

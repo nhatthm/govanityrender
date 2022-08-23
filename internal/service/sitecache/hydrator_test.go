@@ -49,23 +49,26 @@ func TestMetadataHydrator_Hydrate(t *testing.T) {
 	const checksum = "123"
 
 	testCases := []struct {
-		scenario   string
-		mockServer func(t *testing.T) string
-		expected   site.Site
+		scenario       string
+		mockServer     func(t *testing.T) string
+		expectedResult site.Site
+		expectedError  string
 	}{
 		{
 			scenario: "404",
 			mockServer: mockMetadataServer(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusNotFound)
 			}),
-			expected: site.Site{},
+			expectedResult: site.Site{},
+			expectedError:  `metadata not found`,
 		},
 		{
 			scenario: "500",
 			mockServer: mockMetadataServer(func(w http.ResponseWriter, _ *http.Request) {
 				w.WriteHeader(http.StatusInternalServerError)
 			}),
-			expected: site.Site{},
+			expectedResult: site.Site{},
+			expectedError:  `unexpected status code: 500 Internal Server Error`,
 		},
 		{
 			scenario: "could not decode metadata",
@@ -73,7 +76,8 @@ func TestMetadataHydrator_Hydrate(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`43`)) // nolint: errcheck
 			}),
-			expected: site.Site{},
+			expectedResult: site.Site{},
+			expectedError:  `invalid metadata: json: cannot unmarshal number into Go value of type sitecache.metadata`,
 		},
 		{
 			scenario: "checksum mismatched",
@@ -81,7 +85,8 @@ func TestMetadataHydrator_Hydrate(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"checksum": "456", "page_title":"Test"}`)) // nolint: errcheck
 			}),
-			expected: site.Site{},
+			expectedResult: site.Site{},
+			expectedError:  "checksum mismatched",
 		},
 		{
 			scenario: "success",
@@ -89,7 +94,7 @@ func TestMetadataHydrator_Hydrate(t *testing.T) {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write([]byte(`{"checksum": "123", "page_title":"Test"}`)) // nolint: errcheck
 			}),
-			expected: site.Site{
+			expectedResult: site.Site{
 				PageTitle: "Test",
 			},
 		},
@@ -106,11 +111,16 @@ func TestMetadataHydrator_Hydrate(t *testing.T) {
 			}
 
 			err := h.Hydrate(&actual)
-			require.NoError(t, err)
 
-			tc.expected.Hostname = actual.Hostname
+			tc.expectedResult.Hostname = actual.Hostname
 
-			assert.Equal(t, tc.expected, actual)
+			assert.Equal(t, tc.expectedResult, actual)
+
+			if tc.expectedError == "" {
+				assert.NoError(t, err)
+			} else {
+				assert.EqualError(t, err, tc.expectedError)
+			}
 		})
 	}
 }

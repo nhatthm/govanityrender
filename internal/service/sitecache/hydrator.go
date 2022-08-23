@@ -7,11 +7,21 @@ import (
 	"net/http"
 	"time"
 
+	xerrors "go.nhat.io/vanityrender/internal/errors"
 	"go.nhat.io/vanityrender/internal/must"
 	"go.nhat.io/vanityrender/internal/site"
 )
 
 const metadataFile = `metadata.v1.json`
+
+var (
+	// ErrChecksumMismatched indicates that the checksum of the metadata file does not match the checksum of the site.
+	ErrChecksumMismatched = xerrors.Error("checksum mismatched")
+	// ErrMetadataNotFound indicates that the metadata file is not found.
+	ErrMetadataNotFound = xerrors.Error("metadata not found")
+	// ErrMetadataInvalid indicates that the metadata file is invalid.
+	ErrMetadataInvalid = xerrors.Error("invalid metadata")
+)
 
 var _ site.Hydrator = (*Hydrator)(nil)
 
@@ -43,16 +53,17 @@ func (h *Hydrator) metadata(host string) (*metadata, error) {
 	}
 	defer resp.Body.Close() // nolint: errcheck
 
-	// Silently ignore all the errors.
-	if resp.StatusCode != http.StatusOK {
-		return nil, nil // nolint: nilnil // Ignore the error.
+	if resp.StatusCode == http.StatusNotFound {
+		return nil, ErrMetadataNotFound
+	} else if resp.StatusCode != http.StatusOK {
+		return nil, fmt.Errorf("unexpected status code: %s", resp.Status) // nolint: goerr113
 	}
 
 	var m metadata
 
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&m); err != nil {
-		return nil, nil // nolint: nilnil,nilerr // Ignore the error.
+		return nil, fmt.Errorf("%w: %s", ErrMetadataInvalid, err)
 	}
 
 	return &m, nil
@@ -69,8 +80,8 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 		return err
 	}
 
-	if m == nil || h.checksum != m.Checksum {
-		return nil
+	if h.checksum != m.Checksum {
+		return ErrChecksumMismatched
 	}
 
 	*s = m.Site

@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"time"
 
@@ -34,6 +35,7 @@ type metadata struct {
 type Hydrator struct {
 	client *http.Client
 
+	output   io.Writer
 	checksum string
 	timeout  time.Duration
 }
@@ -90,10 +92,28 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 }
 
 // NewMetadataHydrator hydrates configuration using the metadata file.
-func NewMetadataHydrator(checksum string) *Hydrator {
-	return &Hydrator{
+func NewMetadataHydrator(checksum string, opts ...HydratorOption) *Hydrator {
+	h := &Hydrator{
 		client:   &http.Client{},
+		output:   io.Discard,
 		checksum: checksum,
 		timeout:  10 * time.Second,
 	}
+
+	for _, o := range opts {
+		o.applyHydratorOption(h)
+	}
+
+	return h
+}
+
+// HydratorOption is an option to configure Hydrator.
+type HydratorOption interface {
+	applyHydratorOption(r *Hydrator)
+}
+
+type hydratorOptionFunc func(r *Hydrator)
+
+func (f hydratorOptionFunc) applyHydratorOption(r *Hydrator) {
+	f(r)
 }

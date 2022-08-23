@@ -3,8 +3,11 @@ package sitecache
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
+
+	"github.com/fatih/color"
 
 	"go.nhat.io/vanityrender/internal/site"
 )
@@ -17,6 +20,7 @@ type Renderder struct {
 
 	outputDir string
 	checksum  string
+	output    io.Writer
 }
 
 // Render renders the site.
@@ -45,14 +49,38 @@ func (r *Renderder) renderMetadata(s site.Site) error {
 
 	metadataFile := filepath.Join(r.outputDir, metadataFile)
 
-	return os.WriteFile(metadataFile, data, 0o644) // nolint: gosec
+	if err := os.WriteFile(metadataFile, data, 0o644); err != nil { // nolint: gosec
+		return err
+	}
+
+	_, _ = fmt.Fprintln(r.output, color.HiGreenString("Render"), ":", metadataFile)
+
+	return nil
 }
 
 // NewRenderder initiates a new site.Renderder.
-func NewRenderder(upstream site.Renderder, outputDir string, checksum string) *Renderder {
-	return &Renderder{
+func NewRenderder(upstream site.Renderder, outputDir string, checksum string, opts ...RendererOption) *Renderder {
+	r := &Renderder{
 		upstream:  upstream,
 		outputDir: outputDir,
 		checksum:  checksum,
+		output:    io.Discard,
 	}
+
+	for _, o := range opts {
+		o.applyRendererOption(r)
+	}
+
+	return r
+}
+
+// RendererOption is an option to configure renderer.
+type RendererOption interface {
+	applyRendererOption(r *Renderder)
+}
+
+type rendererOptionFunc func(r *Renderder)
+
+func (f rendererOptionFunc) applyRendererOption(r *Renderder) {
+	f(r)
 }

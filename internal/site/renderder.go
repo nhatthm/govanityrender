@@ -2,10 +2,12 @@ package site
 
 import (
 	"fmt"
+	"io"
 	"os"
 	"path/filepath"
 
 	"github.com/aymerick/raymond"
+	"github.com/fatih/color"
 
 	"go.nhat.io/vanityrender/internal/version"
 )
@@ -24,6 +26,8 @@ type HandlebarsRenderder struct {
 	homepageTpl   *raymond.Template
 	repositoryTpl *raymond.Template
 	outputDir     string
+
+	output io.Writer
 }
 
 // Render renders the configuration.
@@ -69,7 +73,13 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 		return err
 	}
 
-	return os.WriteFile(homepageFile, []byte(result), 0o644) // nolint: gosec
+	if err := os.WriteFile(homepageFile, []byte(result), 0o644); err != nil { // nolint: gosec
+		return err
+	}
+
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", indexFile)
+
+	return nil
 }
 
 func (h *HandlebarsRenderder) renderRepository(host string, r Repository) error {
@@ -111,11 +121,13 @@ func (h *HandlebarsRenderder) renderModule(host string, m Module) error {
 		return fmt.Errorf("could not write repository file %q: %w", moduleFile, err)
 	}
 
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", filepath.Join(m.Path, indexFile))
+
 	return nil
 }
 
 // NewHandlebarsRenderder creates a new HandlebarsRenderder.
-func NewHandlebarsRenderder(homepageSrc, repositorySrc, outputDir string) (*HandlebarsRenderder, error) {
+func NewHandlebarsRenderder(homepageSrc, repositorySrc, outputDir string, opts ...RendererOption) (*HandlebarsRenderder, error) {
 	homepageTpl, err := raymond.Parse(homepageSrc)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse homepage template: %w", err)
@@ -130,7 +142,30 @@ func NewHandlebarsRenderder(homepageSrc, repositorySrc, outputDir string) (*Hand
 		homepageTpl:   homepageTpl,
 		repositoryTpl: repositoryTpl,
 		outputDir:     outputDir,
+		output:        io.Discard,
+	}
+
+	for _, o := range opts {
+		o.applyRendererOption(r)
 	}
 
 	return r, nil
+}
+
+// RendererOption is an option to configure renderer.
+type RendererOption interface {
+	applyRendererOption(r *HandlebarsRenderder)
+}
+
+type rendererOptionFunc func(r *HandlebarsRenderder)
+
+func (f rendererOptionFunc) applyRendererOption(r *HandlebarsRenderder) {
+	f(r)
+}
+
+// WithOutput sets the output writer.
+func WithOutput(w io.Writer) RendererOption {
+	return rendererOptionFunc(func(r *HandlebarsRenderder) {
+		r.output = w
+	})
 }

@@ -421,7 +421,7 @@ func TestHydrator_Hydrate(t *testing.T) { // nolint: maintidx
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
-			h := sitefragment.NewHydrator(tc.mockCache(t), tc.mockUpstream(t), tc.modules...)
+			h := sitefragment.NewHydrator(tc.mockCache(t), tc.mockUpstream(t), tc.modules)
 
 			err := h.Hydrate(&tc.input)
 

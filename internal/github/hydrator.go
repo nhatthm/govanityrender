@@ -3,10 +3,13 @@ package github
 import (
 	"context"
 	"fmt"
+	"io"
 	"path/filepath"
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/fatih/color"
 
 	"go.nhat.io/vanityrender/internal/module"
 	"go.nhat.io/vanityrender/internal/site"
@@ -33,6 +36,7 @@ type Hydrator struct {
 	finder module.Finder
 
 	numWorkers int
+	output     io.Writer
 }
 
 // Hydrate hydrates the configuration.
@@ -94,6 +98,8 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 		return nil
 	}
 
+	_, _ = fmt.Fprintln(h.output, color.HiBlueString("Read"), ":", repoURL)
+
 	pathVersions, err := h.finder.Find(repoURL, r.Ref)
 	if err != nil {
 		return err // nolint: wrapcheck
@@ -110,6 +116,8 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 		if string(path) != "." {
 			modulePath = filepath.Join(r.Path, string(path))
 		}
+
+		_, _ = fmt.Fprintln(h.output, color.HiYellowString("Find Module"), ":", modulePath)
 
 		modules = append(modules, site.Module{
 			Path:          modulePath,
@@ -141,15 +149,40 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 }
 
 // NewHydrator initiates a new config.Hydrator.
-func NewHydrator(finder module.Finder) *Hydrator {
-	return &Hydrator{
+func NewHydrator(finder module.Finder, opts ...HydratorOption) *Hydrator {
+	h := &Hydrator{
 		finder:     finder,
 		numWorkers: defaultNumWorkers,
+		output:     io.Discard,
 	}
+
+	for _, o := range opts {
+		o.applyHydratorOption(h)
+	}
+
+	return h
 }
 
 func repositoryURL(url string) string {
 	result := repositoryURLSanitizer.Replace(url)
 
 	return fmt.Sprintf("https://%s", strings.TrimRight(result, "/"))
+}
+
+// HydratorOption is an option to configure Hydrator.
+type HydratorOption interface {
+	applyHydratorOption(r *Hydrator)
+}
+
+type hydratorOptionFunc func(r *Hydrator)
+
+func (f hydratorOptionFunc) applyHydratorOption(r *Hydrator) {
+	f(r)
+}
+
+// WithOutput sets the output writer.
+func WithOutput(w io.Writer) HydratorOption {
+	return hydratorOptionFunc(func(r *Hydrator) {
+		r.output = w
+	})
 }

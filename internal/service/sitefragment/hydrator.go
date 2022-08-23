@@ -2,6 +2,10 @@ package sitefragment
 
 import (
 	"errors"
+	"fmt"
+	"io"
+
+	"github.com/fatih/color"
 
 	"go.nhat.io/vanityrender/internal/module"
 	"go.nhat.io/vanityrender/internal/service/sitecache"
@@ -14,7 +18,9 @@ var _ site.Hydrator = (*Hydrator)(nil)
 type Hydrator struct {
 	cache    site.Hydrator
 	upstream site.Hydrator
-	modules  []string
+
+	output  io.Writer
+	modules []string
 }
 
 // Hydrate hydrates the site configuration.
@@ -27,6 +33,8 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 
 	if err := h.cache.Hydrate(s); err != nil {
 		if isCacheErrors(err) {
+			_, _ = fmt.Fprintln(h.output, color.HiRedString("Cache Error"), ":", err.Error())
+
 			return h.upstream.Hydrate(s)
 		}
 
@@ -56,6 +64,8 @@ func (h *Hydrator) hydrateFragments(s *site.Site, originalRepos map[string]site.
 			indexes[path] = i
 
 			s2.Repositories = append(s2.Repositories, o)
+		} else {
+			_, _ = fmt.Fprintln(h.output, color.HiBlueString("Cache"), ":", path)
 		}
 	}
 
@@ -72,12 +82,19 @@ func (h *Hydrator) hydrateFragments(s *site.Site, originalRepos map[string]site.
 }
 
 // NewHydrator initiates a new site.Hydrator.
-func NewHydrator(cache site.Hydrator, upstream site.Hydrator, modules ...string) *Hydrator {
-	return &Hydrator{
+func NewHydrator(cache site.Hydrator, upstream site.Hydrator, modules []string, opts ...HydratorOption) *Hydrator {
+	h := &Hydrator{
 		cache:    cache,
 		upstream: upstream,
 		modules:  modules,
+		output:   io.Discard,
 	}
+
+	for _, o := range opts {
+		o.applyHydratorOption(h)
+	}
+
+	return h
 }
 
 func repositoriesMap(repos []site.Repository) map[string]site.Repository {
@@ -98,4 +115,22 @@ func isCacheErrors(err error) bool {
 	}
 
 	return false
+}
+
+// HydratorOption is an option to configure Hydrator.
+type HydratorOption interface {
+	applyHydratorOption(r *Hydrator)
+}
+
+type hydratorOptionFunc func(r *Hydrator)
+
+func (f hydratorOptionFunc) applyHydratorOption(r *Hydrator) {
+	f(r)
+}
+
+// WithOutput sets the output writer.
+func WithOutput(w io.Writer) HydratorOption {
+	return hydratorOptionFunc(func(r *Hydrator) {
+		r.output = w
+	})
 }

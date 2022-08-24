@@ -164,7 +164,7 @@ func initSiteConfig(out io.Writer, configFile, checksum string, modules []string
 func initRenderer(out io.Writer, homepageSrc, outputPath, checksum string) (site.Renderder, error) {
 	var r site.Renderder
 
-	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedRepository(), outputPath, site.WithOutput(out))
+	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedNotFound(), templates.EmbeddedRepository(), outputPath, site.WithOutput(out))
 	if err != nil {
 		return nil, err
 	}

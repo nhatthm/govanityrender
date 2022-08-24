@@ -12,7 +12,10 @@ import (
 	"go.nhat.io/vanityrender/internal/version"
 )
 
-const indexFile = `index.html`
+const (
+	indexHTMLFile    = `index.html`
+	notFoundHTMLFile = `404.html`
+)
 
 // Renderder is the interface for rendering.
 type Renderder interface {
@@ -24,6 +27,7 @@ var _ Renderder = (*HandlebarsRenderder)(nil)
 // HandlebarsRenderder renders to the filesystem.
 type HandlebarsRenderder struct {
 	homepageTpl   *raymond.Template
+	notFoundTpl   *raymond.Template
 	repositoryTpl *raymond.Template
 	outputDir     string
 
@@ -36,6 +40,10 @@ func (h *HandlebarsRenderder) Render(s Site) error {
 		return fmt.Errorf("could not render homepage: %w", err)
 	}
 
+	if err := h.render404(s); err != nil {
+		return fmt.Errorf("could not render 404: %w", err)
+	}
+
 	for _, r := range s.Repositories {
 		if err := h.renderRepository(s.Hostname, r); err != nil {
 			return err
@@ -46,7 +54,7 @@ func (h *HandlebarsRenderder) Render(s Site) error {
 }
 
 func (h *HandlebarsRenderder) renderHomepage(s Site) error {
-	homepageFile := filepath.Join(h.outputDir, indexFile)
+	homepageFile := filepath.Join(h.outputDir, indexHTMLFile)
 
 	repositories := make([]map[string]any, len(s.Repositories))
 	for i, r := range s.Repositories {
@@ -78,7 +86,32 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", indexFile)
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", indexHTMLFile)
+
+	return nil
+}
+
+func (h *HandlebarsRenderder) render404(s Site) error {
+	notFoundFile := filepath.Join(h.outputDir, notFoundHTMLFile)
+
+	inputs := map[string]any{
+		"pageTitle":       s.PageTitle,
+		"pageDescription": s.PageDescription,
+		"host":            s.Hostname,
+		"sourceURL":       s.SourceURL,
+		"renderer":        version.Info(),
+	}
+
+	result, err := h.notFoundTpl.Exec(inputs)
+	if err != nil {
+		return err
+	}
+
+	if err := os.WriteFile(notFoundFile, []byte(result), 0o644); err != nil { // nolint: gosec
+		return err
+	}
+
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", notFoundHTMLFile)
 
 	return nil
 }
@@ -100,7 +133,7 @@ func (h *HandlebarsRenderder) renderModule(host string, m Module) error {
 		return fmt.Errorf("could not create repository directory %q: %w", moduleDir, err)
 	}
 
-	moduleFile := filepath.Join(moduleDir, indexFile)
+	moduleFile := filepath.Join(moduleDir, indexHTMLFile)
 
 	ctx := map[string]any{
 		"host":          host,
@@ -122,16 +155,25 @@ func (h *HandlebarsRenderder) renderModule(host string, m Module) error {
 		return fmt.Errorf("could not write repository file %q: %w", moduleFile, err)
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", filepath.Join(m.Path, indexFile))
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", filepath.Join(m.Path, indexHTMLFile))
 
 	return nil
 }
 
 // NewHandlebarsRenderder creates a new HandlebarsRenderder.
-func NewHandlebarsRenderder(homepageSrc, repositorySrc, outputDir string, opts ...RendererOption) (*HandlebarsRenderder, error) {
+func NewHandlebarsRenderder(
+	homepageSrc, notFoundSrc, repositorySrc string,
+	outputDir string,
+	opts ...RendererOption,
+) (*HandlebarsRenderder, error) {
 	homepageTpl, err := raymond.Parse(homepageSrc)
 	if err != nil {
 		return nil, fmt.Errorf("could not parse homepage template: %w", err)
+	}
+
+	notFoundTpl, err := raymond.Parse(notFoundSrc)
+	if err != nil {
+		return nil, fmt.Errorf("could not parse 404 template: %w", err)
 	}
 
 	repositoryTpl, err := raymond.Parse(repositorySrc)
@@ -141,6 +183,7 @@ func NewHandlebarsRenderder(homepageSrc, repositorySrc, outputDir string, opts .
 
 	r := &HandlebarsRenderder{
 		homepageTpl:   homepageTpl,
+		notFoundTpl:   notFoundTpl,
 		repositoryTpl: repositoryTpl,
 		outputDir:     outputDir,
 		output:        io.Discard,

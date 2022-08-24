@@ -27,18 +27,25 @@ func Execute() int {
 		homepageTpl string
 		outputPath  string
 		modulesVal  string
+		noColor     bool
 	)
 
 	flag.StringVar(&configFile, "config", "config.json", "config file")
 	flag.StringVar(&homepageTpl, "homepage-tpl", "", "template file")
 	flag.StringVar(&outputPath, "out", "build", "output path")
 	flag.StringVar(&modulesVal, "modules", "", "rebuild only the listed modules, comma separated")
+	flag.BoolVar(&noColor, "no-color", false, "do not use colors in output")
 
 	flag.Parse()
 
 	modules := split(strings.Trim(modulesVal, "\r\n "), ",")
 
-	err := runRender(colorable.NewColorableStdout(), configFile, homepageTpl, outputPath, modules)
+	out := colorable.NewNonColorable(os.Stdout)
+	if !noColor {
+		out = colorable.NewColorable(os.Stdout)
+	}
+
+	err := runRender(out, configFile, homepageTpl, outputPath, modules)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 

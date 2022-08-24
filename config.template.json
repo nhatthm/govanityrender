@@ -1,9 +1,10 @@
 {
     "page_title": "go.nhat.io",
     "host": "go.nhat.io",
+    "source_url": "https://github.com/nhatthm/govanityrender",
     "repositories": [
         {
-            "library": "Vanity Renderder",
+            "name": "Vanity Renderder",
             "path": "vanityrender",
             "repository": "https://github.com/nhatthm/govanityrender"
         }

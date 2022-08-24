@@ -18,6 +18,10 @@
             text-align: center;
         }
 
+        .deprecated {
+            color: #f44336;
+        }
+
         .footer {
             padding-top: 2.5em;
             font-size: 0.8em;
@@ -74,10 +78,14 @@
                         <a href="https://pkg.go.dev/{{ host }}/{{ path }}" target="_blank">{{ name }}</a>
                         {{#if deprecated}}
                         <small><i>(Deprecated)</i></small>
-                        <i class="deprecated fa-solid fa-triangle-exclamation" style="color: #f44336" data-tooltip="{{ deprecated }}"></i>
                         {{/if}}
                     </td>
-                    <td>{{ path }}</td>
+                    <td>
+                        {{#if deprecated}}
+                        <i class="deprecated fa-solid fa-triangle-exclamation" data-tooltip="{{ deprecated }}"></i>
+                        {{/if}}
+                        {{ path }}
+                    </td>
                     <td class="center">{{ latestVersion }}</td>
                     <td><a href="{{ repositoryURL }}" target="_blank">{{ repositoryName }}</a></td>
                 </tr>

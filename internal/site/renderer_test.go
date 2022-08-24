@@ -20,7 +20,8 @@ func TestNewHandlebarsRenderder(t *testing.T) {
 	testCases := []struct {
 		scenario      string
 		homepageSrc   string
-		librarySrc    string
+		NotFoundSrc   string
+		repositorySrc string
 		expectedError string
 	}{
 		{
@@ -29,15 +30,23 @@ func TestNewHandlebarsRenderder(t *testing.T) {
 			expectedError: "could not parse homepage template: Parse error on line 1:",
 		},
 		{
-			scenario:      "library template is broken",
+			scenario:      "not found template is broken",
 			homepageSrc:   `{{ message }}`,
-			librarySrc:    `{{`,
+			NotFoundSrc:   `{{`,
+			expectedError: "could not parse 404 template: Parse error on line 1:",
+		},
+		{
+			scenario:      "repository template is broken",
+			homepageSrc:   `{{ message }}`,
+			NotFoundSrc:   `{{ message }}`,
+			repositorySrc: `{{`,
 			expectedError: "could not parse repository template: Parse error on line 1:",
 		},
 		{
-			scenario:    "success",
-			homepageSrc: `{{ message }}`,
-			librarySrc:  `{{ message }}`,
+			scenario:      "success",
+			homepageSrc:   `{{ message }}`,
+			NotFoundSrc:   `{{ message }}`,
+			repositorySrc: `{{ message }}`,
 		},
 	}
 
@@ -46,7 +55,7 @@ func TestNewHandlebarsRenderder(t *testing.T) {
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
-			actual, err := site.NewHandlebarsRenderder(tc.homepageSrc, tc.librarySrc, "")
+			actual, err := site.NewHandlebarsRenderder(tc.homepageSrc, tc.NotFoundSrc, tc.repositorySrc, "")
 
 			if tc.expectedError == "" {
 				assert.NotNil(t, actual)
@@ -162,7 +171,7 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 		},
 	}
 
-	r, err := site.NewHandlebarsRenderder(templates.EmbeddedHomepage(), templates.EmbeddedRepository(), outputDir)
+	r, err := site.NewHandlebarsRenderder(templates.EmbeddedHomepage(), templates.EmbeddedNotFound(), templates.EmbeddedRepository(), outputDir)
 	require.NoError(t, err)
 
 	err = r.Render(s)

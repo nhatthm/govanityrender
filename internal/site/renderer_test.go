@@ -80,6 +80,23 @@ func TestHandlebarsRenderder_Render(t *testing.T) {
 		SourceURL:       "github.com/nhatthm/govanityrender",
 		Repositories: []site.Repository{
 			{
+				Name:           "Hidden",
+				Path:           "hidden",
+				RepositoryURL:  "https://github.com/nhatthm/hidden",
+				RepositoryName: "github.com/nhatthm/hidden",
+				Hidden:         true,
+				LatestVersion:  "v0.1.0",
+				Modules: []site.Module{{
+					Path:          "hidden",
+					ImportPrefix:  "hidden",
+					VCS:           "git",
+					RepositoryURL: "https://github.com/nhatthm/hidden",
+					HomeURL:       "https://github.com/nhatthm/hidden",
+					DirectoryURL:  "https://github.com/nhatthm/hidden/tree/master{/dir}",
+					FileURL:       "https://github.com/nhatthm/hidden/blob/master{/dir}/{file}#L{line}",
+				}},
+			},
+			{
 				Name:           "Vanity Renderder",
 				Path:           "vanityrender",
 				RepositoryURL:  "https://github.com/nhatthm/govanityrender",

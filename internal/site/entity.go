@@ -14,6 +14,7 @@ type Repository struct {
 	Name           string   `json:"name"`
 	Path           string   `json:"path"`
 	Deprecated     string   `json:"deprecated"`
+	Hidden         bool     `json:"hidden"`
 	RepositoryURL  string   `json:"repository_url"`
 	RepositoryName string   `json:"repository_name"`
 	Ref            string   `json:"ref"`

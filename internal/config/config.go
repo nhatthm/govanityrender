@@ -34,6 +34,7 @@ type Repository struct {
 	Repository string `json:"repository"`
 	Ref        string `json:"ref"`
 	Deprecated string `json:"deprecated"`
+	Hidden     bool   `json:"hidden"`
 }
 
 // FromFile reads the configuration from a file.

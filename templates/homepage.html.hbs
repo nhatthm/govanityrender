@@ -73,7 +73,7 @@
             </thead>
             <tbody>
                 {{#each repositories}}
-                <tr>
+                {{#unless hidden}}<tr>
                     <td>
                         <a href="https://pkg.go.dev/{{ host }}/{{ path }}" target="_blank">{{ name }}</a>
                         {{#if deprecated}}
@@ -88,7 +88,7 @@
                     </td>
                     <td class="center">{{ latestVersion }}</td>
                     <td><a href="{{ repositoryURL }}" target="_blank">{{ repositoryName }}</a></td>
-                </tr>
+                </tr>{{/unless}}
                 {{/each}}
             </tbody>
         </table>

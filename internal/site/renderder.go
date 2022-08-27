@@ -62,6 +62,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 			"name":           r.Name,
 			"path":           r.Path,
 			"deprecated":     r.Deprecated,
+			"hidden":         r.Hidden,
 			"repositoryURL":  r.RepositoryURL,
 			"repositoryName": r.RepositoryName,
 			"latestVersion":  r.LatestVersion,

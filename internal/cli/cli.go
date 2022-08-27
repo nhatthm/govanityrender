@@ -148,6 +148,7 @@ func initSiteConfig(out io.Writer, configFile, checksum string, modules []string
 			Name:          r.Name,
 			Path:          r.Path,
 			Deprecated:    r.Deprecated,
+			Hidden:        r.Hidden,
 			RepositoryURL: r.Repository,
 			Ref:           r.Ref,
 		}

@@ -117,7 +117,7 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 			modulePath = filepath.Join(r.Path, string(path))
 		}
 
-		_, _ = fmt.Fprintln(h.output, color.HiYellowString("Find Module"), ":", modulePath)
+		_, _ = fmt.Fprintln(h.output, color.HiYellowString("Find Module"), ":", modulePath, version)
 
 		modules = append(modules, site.Module{
 			Path:          modulePath,

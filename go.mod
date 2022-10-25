@@ -7,7 +7,7 @@ require (
 	github.com/fatih/color v1.13.0
 	github.com/go-git/go-git/v5 v5.4.2
 	github.com/mattn/go-colorable v0.1.13
-	github.com/stretchr/testify v1.8.0
+	github.com/stretchr/testify v1.8.1
 	golang.org/x/mod v0.6.0
 )
 

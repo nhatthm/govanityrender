@@ -1,9 +1,10 @@
-APP=vanityrender
+APP = vanityrender
+MODULE_NAME = $(APP)
 
 BUILD_DIR ?= out
 VENDOR_DIR = vendor
 
-GOLANGCI_LINT_VERSION ?= v1.50.0
+GOLANGCI_LINT_VERSION ?= v1.50.1
 
 GO ?= go
 GOLANGCI_LINT ?= $(shell go env GOPATH)/bin/golangci-lint-$(GOLANGCI_LINT_VERSION)
@@ -23,7 +24,7 @@ $(VENDOR_DIR):
 
 .PHONY: lint
 lint: $(GOLANGCI_LINT) $(VENDOR_DIR)
-	@$(GOLANGCI_LINT) run -c .golangci.yaml
+	@$(GOLANGCI_LINT) run
 
 .PHONY: build
 build:
@@ -43,8 +44,9 @@ test-unit:
 #	@echo ">> integration test"
 #	@$(GO) test ./features/... -gcflags=-l -coverprofile=features.coverprofile -coverpkg ./... -race --godog
 
-.PHONY: golangci-lint-version
-golangci-lint-version:
+.PHONY: gha-vars
+gha-vars:
+	@echo "::set-output name=MODULE_NAME::$(MODULE_NAME)"
 	@echo "::set-output name=GOLANGCI_LINT_VERSION::$(GOLANGCI_LINT_VERSION)"
 
 $(GOLANGCI_LINT):

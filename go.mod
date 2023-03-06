@@ -8,7 +8,7 @@ require (
 	github.com/go-git/go-git/v5 v5.6.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/stretchr/testify v1.8.2
-	golang.org/x/mod v0.8.0
+	golang.org/x/mod v0.9.0
 )
 
 require (

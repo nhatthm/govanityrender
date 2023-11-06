@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/aymerick/raymond v2.0.2+incompatible
-	github.com/fatih/color v1.15.0
+	github.com/fatih/color v1.16.0
 	github.com/go-git/go-git/v5 v5.10.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/stretchr/testify v1.8.4
@@ -25,7 +25,7 @@ require (
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/jbenet/go-context v0.0.0-20150711004518-d14ea06fba99 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/mattn/go-isatty v0.0.17 // indirect
+	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/pjbgf/sha1cd v0.3.0 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/sergi/go-diff v1.2.0 // indirect
@@ -33,7 +33,7 @@ require (
 	github.com/xanzy/ssh-agent v0.3.3 // indirect
 	golang.org/x/crypto v0.14.0 // indirect
 	golang.org/x/net v0.17.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
+	golang.org/x/sys v0.14.0 // indirect
 	golang.org/x/tools v0.13.0 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect

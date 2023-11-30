@@ -2,6 +2,7 @@ package cli
 
 import (
 	"crypto/sha1" // nolint: gosec
+	"encoding/hex"
 	"flag"
 	"fmt"
 	"io"
@@ -190,7 +191,7 @@ func checksum(path string) (string, error) {
 		return "", fmt.Errorf("could not calculate checksum: %w", err)
 	}
 
-	return fmt.Sprintf("%x", h.Sum(nil)), nil
+	return hex.EncodeToString(h.Sum(nil)), nil
 }
 
 func split(s, sep string) []string {

@@ -1,6 +1,6 @@
 package errors
 
-var _ error = (*Error)(nil)
+var _ error = (*Error)(nil) //nolint: errcheck
 
 // Error is a custom error type.
 type Error string

@@ -3,6 +3,13 @@ run:
   tests: true
 
 linters-settings:
+  depguard:
+    rules:
+      Main:
+        files:
+          - "!**.go"
+        allow:
+          - $gostd
   errcheck:
     check-type-assertions: true
     check-blank: true
@@ -20,6 +27,7 @@ linters-settings:
 linters:
   enable-all: true
   disable:
+    - deadcode
     - exhaustivestruct
     - exhaustruct
     - forbidigo
@@ -33,11 +41,16 @@ linters:
     - ireturn
     - lll
     - maligned
+    - nonamedreturns
+    - nosnakecase
     - nolintlint # https://github.com/golangci/golangci-lint/issues/3063
     - paralleltest
     - scopelint
+    - structcheck
     - tagliatelle
+    - testifylint
     - testpackage
+    - varcheck
     - varnamelen
     - wrapcheck
 

@@ -65,7 +65,7 @@ func (h *Hydrator) metadata(host string) (*metadata, error) {
 
 	dec := json.NewDecoder(resp.Body)
 	if err := dec.Decode(&m); err != nil {
-		return nil, fmt.Errorf("%w: %s", ErrMetadataInvalid, err)
+		return nil, fmt.Errorf("%w: %s", ErrMetadataInvalid, err) //nolint: errorlint
 	}
 
 	return &m, nil

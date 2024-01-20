@@ -44,10 +44,10 @@ test-unit:
 #	@echo ">> integration test"
 #	@$(GO) test ./features/... -gcflags=-l -coverprofile=features.coverprofile -coverpkg ./... -race --godog
 
-.PHONY: gha-vars
-gha-vars:
-	@echo "::set-output name=MODULE_NAME::$(MODULE_NAME)"
-	@echo "::set-output name=GOLANGCI_LINT_VERSION::$(GOLANGCI_LINT_VERSION)"
+.PHONY: $(GITHUB_OUTPUT)
+$(GITHUB_OUTPUT):
+	@echo "MODULE_NAME=$(MODULE_NAME)" >>"$@"
+	@echo "GOLANGCI_LINT_VERSION=$(GOLANGCI_LINT_VERSION)" >>"$@"
 
 $(GOLANGCI_LINT):
 	@echo "$(OK_COLOR)==> Installing golangci-lint $(GOLANGCI_LINT_VERSION)$(NO_COLOR)"; \

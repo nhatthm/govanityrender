@@ -20,19 +20,15 @@ jobs:
       contents: read
       packages: write
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+      - name: Checkout code
+        uses: nhatthm/gh-actions/checkout@master
 
-      - name: Login to DockerHub
-        uses: docker/login-action@v3
+      - name: Build and push
+        uses: nhatthm/gh-actions/docker-build-and-push@master
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build and push
-        uses: docker/build-push-action@v5
-        with:
           context: .
           push: true
           file: resources/docker/Dockerfile
@@ -47,15 +43,9 @@ jobs:
   notify-update-registry:
     runs-on: ubuntu-latest
     needs: build-and-push
-    strategy:
-      matrix:
-        registry: [ go.nhat.io, go-staging.nhat.io ]
     steps:
-      - name: notify ${{ matrix.registry }}
-        uses: benc-uk/workflow-dispatch@v121
+      - name: Notify registries
+        uses: nhatthm/gh-actions/notify-go-registries@master
         with:
-          workflow: build
-          repo: nhatthm/${{ matrix.registry }}
           token: ${{ secrets.REGISTRY_TOKEN }}
-          inputs: '{}'
-          ref: 'master'
+          module: "false"

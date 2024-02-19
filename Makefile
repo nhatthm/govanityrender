@@ -23,7 +23,7 @@ $(VENDOR_DIR):
 	@$(GO) mod tidy
 
 .PHONY: lint
-lint: $(GOLANGCI_LINT) $(VENDOR_DIR)
+lint: $(GOLANGCI_LINT)
 	@$(GOLANGCI_LINT) run
 
 .PHONY: build

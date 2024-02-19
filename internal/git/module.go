@@ -14,10 +14,14 @@ func (f *ModuleFinder) Find(loc, ref string) (map[module.Path]module.Version, er
 		return nil, err
 	}
 
-	versions, err := Versions(r)
+	versions := []string{"v0.0.0"}
+
+	taggedVersions, err := Versions(r)
 	if err != nil {
 		return nil, err
 	}
+
+	versions = append(versions, taggedVersions...)
 
 	goModVersions, err := module.FindVersions(dir)
 	if err != nil {

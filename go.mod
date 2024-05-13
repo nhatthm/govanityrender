@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/aymerick/raymond v2.0.2+incompatible
-	github.com/fatih/color v1.16.0
+	github.com/fatih/color v1.17.0
 	github.com/go-git/go-git/v5 v5.12.0
 	github.com/mattn/go-colorable v0.1.13
 	github.com/stretchr/testify v1.9.0

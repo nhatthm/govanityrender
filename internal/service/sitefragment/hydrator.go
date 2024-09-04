@@ -33,7 +33,7 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 
 	if err := h.cache.Hydrate(s); err != nil {
 		if isCacheErrors(err) {
-			_, _ = fmt.Fprintln(h.output, color.HiRedString("Cache Error"), ":", err.Error())
+			_, _ = fmt.Fprintln(h.output, color.HiRedString("Cache Error"), ":", err.Error()) //nolint: errcheck
 
 			return h.upstream.Hydrate(s)
 		}
@@ -65,7 +65,7 @@ func (h *Hydrator) hydrateFragments(s *site.Site, originalRepos map[string]site.
 
 			s2.Repositories = append(s2.Repositories, o)
 		} else {
-			_, _ = fmt.Fprintln(h.output, color.HiBlueString("Cache"), ":", path)
+			_, _ = fmt.Fprintln(h.output, color.HiBlueString("Cache"), ":", path) //nolint: errcheck
 		}
 	}
 

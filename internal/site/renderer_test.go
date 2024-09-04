@@ -51,7 +51,6 @@ func TestNewHandlebarsRenderder(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -233,7 +232,7 @@ func assertOutput(t *testing.T, expectedDir, actualDir string) {
 	})
 	require.NoError(t, err)
 
-	err = filepath.Walk(actualDir, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk(actualDir, func(path string, _ os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}

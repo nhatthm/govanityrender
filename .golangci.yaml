@@ -27,30 +27,23 @@ linters-settings:
 linters:
   enable-all: true
   disable:
-    - deadcode
-    - exhaustivestruct
+    - execinquery
     - exhaustruct
     - forbidigo
     - forcetypeassert
     - gci
     - gochecknoglobals
-    - golint
     - gomnd
-    - ifshort
-    - interfacer
     - ireturn
     - lll
-    - maligned
+    - mnd
     - nonamedreturns
-    - nosnakecase
     - nolintlint # https://github.com/golangci/golangci-lint/issues/3063
     - paralleltest
-    - scopelint
-    - structcheck
+    - perfsprint
     - tagliatelle
     - testifylint
     - testpackage
-    - varcheck
     - varnamelen
     - wrapcheck
 
@@ -59,6 +52,7 @@ issues:
   exclude-rules:
     - linters:
         - dupl
+        - err113
         - funlen
         - goconst
         - goerr113

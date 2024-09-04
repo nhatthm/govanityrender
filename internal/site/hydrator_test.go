@@ -19,21 +19,20 @@ func TestHydrate(t *testing.T) {
 	}{
 		{
 			scenario: "has error",
-			hydrator: hydrateFunc(func(s *site.Site) error {
+			hydrator: hydrateFunc(func(*site.Site) error {
 				return errors.New("error")
 			}),
 			expected: errors.New("error"),
 		},
 		{
 			scenario: "no error",
-			hydrator: hydrateFunc(func(s *site.Site) error {
+			hydrator: hydrateFunc(func(*site.Site) error {
 				return nil
 			}),
 		},
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 

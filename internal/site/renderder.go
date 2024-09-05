@@ -87,7 +87,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", indexHTMLFile)
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", indexHTMLFile) //nolint: errcheck
 
 	return nil
 }
@@ -112,7 +112,7 @@ func (h *HandlebarsRenderder) render404(s Site) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", notFoundHTMLFile)
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", notFoundHTMLFile) //nolint: errcheck
 
 	return nil
 }
@@ -156,7 +156,7 @@ func (h *HandlebarsRenderder) renderModule(host string, m Module) error {
 		return fmt.Errorf("could not write repository file %q: %w", moduleFile, err)
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", filepath.Join(m.Path, indexHTMLFile))
+	_, _ = fmt.Fprintln(h.output, color.HiGreenString("Render"), ":", filepath.Join(m.Path, indexHTMLFile)) //nolint: errcheck
 
 	return nil
 }

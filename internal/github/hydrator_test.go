@@ -185,7 +185,6 @@ func TestHydrator_Hydrate(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -209,13 +208,13 @@ func (f moduleFinderFunc) Find(loc, ref string) (map[module.Path]module.Version,
 }
 
 func mockModuleFinderError(err error) moduleFinderFunc {
-	return func(loc, ref string) (map[module.Path]module.Version, error) {
+	return func(string, string) (map[module.Path]module.Version, error) {
 		return nil, err
 	}
 }
 
 func mockModuleFinder(versions map[module.Path]module.Version) moduleFinderFunc {
-	return func(loc, ref string) (map[module.Path]module.Version, error) {
+	return func(string, string) (map[module.Path]module.Version, error) {
 		return versions, nil
 	}
 }

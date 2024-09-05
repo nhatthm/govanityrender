@@ -23,7 +23,7 @@ const message = `
 func main() {
 	info := version.Info()
 
-	_, _ = fmt.Fprintf(os.Stdout, message, info.Version, info.Revision)
+	_, _ = fmt.Fprintf(os.Stdout, message, info.Version, info.Revision) //nolint: errcheck
 
 	os.Exit(cli.Execute())
 }

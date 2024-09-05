@@ -81,7 +81,7 @@ func (r renderFunc) Render(s site.Site) error {
 }
 
 func mockRenderError(err error) renderFunc {
-	return func(s site.Site) error {
+	return func(site.Site) error {
 		return err
 	}
 }

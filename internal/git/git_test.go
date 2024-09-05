@@ -69,7 +69,6 @@ func TestClone_Success(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -162,7 +161,6 @@ func TestVersions_Success(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -211,7 +209,7 @@ func mockRepository(mockers ...func(t *testing.T, r *gogit.Repository, dir strin
 }
 
 func tagRepositoryHead(tag string) func(t *testing.T, r *gogit.Repository, dir string) {
-	return func(t *testing.T, r *gogit.Repository, dir string) {
+	return func(t *testing.T, r *gogit.Repository, _ string) {
 		t.Helper()
 
 		h, err := r.Head()

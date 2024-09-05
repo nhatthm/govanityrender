@@ -44,7 +44,6 @@ func TestPath_IsRoot(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -101,7 +100,6 @@ func TestVersion_LessThan(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -175,7 +173,6 @@ func TestPathVersion(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -229,7 +226,6 @@ func TestPathWithVersion(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -276,7 +272,6 @@ func TestPathWithoutVersion(t *testing.T) {
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 

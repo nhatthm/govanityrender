@@ -53,7 +53,7 @@ func (r *Renderder) renderMetadata(s site.Site) error {
 		return err
 	}
 
-	_, _ = fmt.Fprintln(r.output, color.HiGreenString("Render"), ":", metadataFile)
+	_, _ = fmt.Fprintln(r.output, color.HiGreenString("Render"), ":", metadataFile) //nolint: errcheck
 
 	return nil
 }

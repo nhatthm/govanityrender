@@ -52,7 +52,7 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 
 	wg.Add(h.numWorkers)
 
-	for i := 0; i < h.numWorkers; i++ {
+	for range h.numWorkers {
 		go func() {
 			defer wg.Done()
 
@@ -98,7 +98,7 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 		return nil
 	}
 
-	_, _ = fmt.Fprintln(h.output, color.HiBlueString("Read"), ":", repoURL)
+	_, _ = fmt.Fprintln(h.output, color.HiBlueString("Read"), ":", repoURL) //nolint: errcheck
 
 	pathVersions, err := h.finder.Find(repoURL, r.Ref)
 	if err != nil {
@@ -117,7 +117,7 @@ func (h *Hydrator) hydrateRepository(r *site.Repository) error {
 			modulePath = filepath.Join(r.Path, string(path))
 		}
 
-		_, _ = fmt.Fprintln(h.output, color.HiYellowString("Find Module"), ":", modulePath, version)
+		_, _ = fmt.Fprintln(h.output, color.HiYellowString("Find Module"), ":", modulePath, version) //nolint: errcheck
 
 		modules = append(modules, site.Module{
 			Path:          modulePath,

@@ -417,7 +417,6 @@ func TestHydrator_Hydrate(t *testing.T) { // nolint: maintidx
 	}
 
 	for _, tc := range testCases {
-		tc := tc
 		t.Run(tc.scenario, func(t *testing.T) {
 			t.Parallel()
 
@@ -439,7 +438,7 @@ func TestHydrator_Hydrate(t *testing.T) { // nolint: maintidx
 var nopHydrator = func(t *testing.T) site.Hydrator {
 	t.Helper()
 
-	return hydrateFunc(func(s *site.Site) error {
+	return hydrateFunc(func(*site.Site) error {
 		t.Error("unexpected call")
 
 		return nil
@@ -456,7 +455,7 @@ func mockHydrateError(err error) func(t *testing.T) site.Hydrator {
 	return func(t *testing.T) site.Hydrator {
 		t.Helper()
 
-		return hydrateFunc(func(s *site.Site) error {
+		return hydrateFunc(func(*site.Site) error {
 			return err
 		})
 	}

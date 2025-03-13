@@ -11,7 +11,7 @@ Go Vanity HTML Renderer generates the html pages to use with GitHub Pages that a
 
 ## Prerequisites
 
-- `Go >= 1.18`
+- `Go >= 1.24`
 
 ## Install
 

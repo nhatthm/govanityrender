@@ -113,7 +113,7 @@ func initOutputDir(outputPath string) (string, error) {
 	fi, err := os.Stat(filepath.Clean(outputPath))
 	if err == nil {
 		if !fi.IsDir() {
-			return "", fmt.Errorf("output path %q is not a directory", outputPath) // nolint: goerr113
+			return "", fmt.Errorf("output path %q is not a directory", outputPath) // nolint: err113
 		}
 
 		return outputPath, nil

@@ -4,7 +4,7 @@ MODULE_NAME = $(APP)
 BUILD_DIR ?= out
 VENDOR_DIR = vendor
 
-GOLANGCI_LINT_VERSION ?= v1.64.7
+GOLANGCI_LINT_VERSION ?= v2.0.2
 
 GO ?= go
 GOLANGCI_LINT ?= $(shell go env GOPATH)/bin/golangci-lint-$(GOLANGCI_LINT_VERSION)
@@ -25,6 +25,10 @@ $(VENDOR_DIR):
 .PHONY: update
 update:
 	@$(GO) get -u ./...
+
+.PHONY: tidy
+tidy:
+	@$(GO) mod tidy
 
 .PHONY: lint
 lint: $(GOLANGCI_LINT)

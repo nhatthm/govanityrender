@@ -58,7 +58,7 @@ func (h *Hydrator) metadata(host string) (*metadata, error) {
 	if resp.StatusCode == http.StatusNotFound {
 		return nil, ErrMetadataNotFound
 	} else if resp.StatusCode != http.StatusOK {
-		return nil, fmt.Errorf("unexpected status code: %s", resp.Status) // nolint: goerr113
+		return nil, fmt.Errorf("unexpected status code: %s", resp.Status) // nolint: err113
 	}
 
 	var m metadata

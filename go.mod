@@ -5,7 +5,7 @@ go 1.24
 require (
 	github.com/aymerick/raymond v2.0.2+incompatible
 	github.com/fatih/color v1.18.0
-	github.com/go-git/go-git/v5 v5.16.0
+	github.com/go-git/go-git/v5 v5.16.1
 	github.com/mattn/go-colorable v0.1.14
 	github.com/stretchr/testify v1.10.0
 	golang.org/x/mod v0.24.0

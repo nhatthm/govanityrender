@@ -26,6 +26,7 @@ func Execute() int {
 	var (
 		configFile  string
 		homepageTpl string
+		notFoundTpl string
 		outputPath  string
 		modulesVal  string
 		noColor     bool
@@ -33,6 +34,7 @@ func Execute() int {
 
 	flag.StringVar(&configFile, "config", "config.json", "config file")
 	flag.StringVar(&homepageTpl, "homepage-tpl", "", "template file")
+	flag.StringVar(&notFoundTpl, "404-tpl", "", "template file")
 	flag.StringVar(&outputPath, "out", "build", "output path")
 	flag.StringVar(&modulesVal, "modules", "", "rebuild only the listed modules, comma separated")
 	flag.BoolVar(&noColor, "no-color", false, "do not use colors in output")
@@ -46,7 +48,7 @@ func Execute() int {
 		out = colorable.NewColorable(os.Stdout)
 	}
 
-	err := runRender(out, configFile, homepageTpl, outputPath, modules)
+	err := runRender(out, configFile, homepageTpl, notFoundTpl, outputPath, modules)
 	if err != nil {
 		_, _ = fmt.Fprintf(os.Stderr, "%s\n", err)
 
@@ -56,15 +58,20 @@ func Execute() int {
 	return 0
 }
 
-func runRender(out io.Writer, configFile string, homepageTpl string, outputPath string, modules []string) error {
+func runRender(out io.Writer, configFile string, homepageTpl string, notFoundTpl string, outputPath string, modules []string) error {
 	checksum, err := checksum(configFile)
 	if err != nil {
 		return err
 	}
 
-	homepageSrc, err := initHomepageSrc(homepageTpl)
+	homepageSrc, err := initTemplateSrc(homepageTpl, templates.EmbeddedHomepage)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not read homepage template: %w", err)
+	}
+
+	notFoundSrc, err := initTemplateSrc(notFoundTpl, templates.EmbeddedNotFound)
+	if err != nil {
+		return fmt.Errorf("could not read 404 template: %w", err)
 	}
 
 	outputPath, err = initOutputDir(outputPath)
@@ -77,7 +84,7 @@ func runRender(out io.Writer, configFile string, homepageTpl string, outputPath 
 		return err
 	}
 
-	r, err := initRenderer(out, homepageSrc, outputPath, checksum)
+	r, err := initRenderer(out, homepageSrc, notFoundSrc, outputPath, checksum)
 	if err != nil {
 		return err
 	}
@@ -96,17 +103,17 @@ func initConfigHydrators(out io.Writer, checksum string, modules []string) []sit
 	}
 }
 
-func initHomepageSrc(homepageTpl string) (string, error) {
-	if len(homepageTpl) > 0 {
-		data, err := os.ReadFile(filepath.Clean(homepageTpl))
+func initTemplateSrc(tplFile string, embedded func() string) (string, error) {
+	if len(tplFile) > 0 {
+		data, err := os.ReadFile(filepath.Clean(tplFile))
 		if err != nil {
-			return "", fmt.Errorf("could not read homepage template: %w", err)
+			return "", err
 		}
 
 		return string(data), nil
 	}
 
-	return templates.EmbeddedHomepage(), nil
+	return embedded(), nil
 }
 
 func initOutputDir(outputPath string) (string, error) {
@@ -163,10 +170,10 @@ func initSiteConfig(out io.Writer, configFile, checksum string, modules []string
 	return &s, nil
 }
 
-func initRenderer(out io.Writer, homepageSrc, outputPath, checksum string) (site.Renderder, error) {
+func initRenderer(out io.Writer, homepageSrc, notFoundSrc, outputPath, checksum string) (site.Renderder, error) {
 	var r site.Renderder
 
-	r, err := site.NewHandlebarsRenderder(homepageSrc, templates.EmbeddedNotFound(), templates.EmbeddedRepository(), outputPath, site.WithOutput(out))
+	r, err := site.NewHandlebarsRenderder(homepageSrc, notFoundSrc, templates.EmbeddedRepository(), outputPath, site.WithOutput(out))
 	if err != nil {
 		return nil, err
 	}

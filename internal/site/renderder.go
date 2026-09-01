@@ -72,7 +72,7 @@ func (h *HandlebarsRenderder) renderHomepage(s Site) error {
 	inputs := map[string]any{
 		"pageTitle":       s.PageTitle,
 		"pageDescription": s.PageDescription,
-		"host":            s.Hostname,
+		"host":            s.Hostname, //nolint: goconst
 		"sourceURL":       s.SourceURL,
 		"repositories":    repositories,
 		"renderer":        version.Info(),

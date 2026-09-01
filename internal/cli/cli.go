@@ -197,7 +197,7 @@ func checksum(path string) (string, error) {
 func split(s, sep string) []string {
 	var r []string
 
-	for _, str := range strings.Split(s, sep) {
+	for str := range strings.SplitSeq(s, sep) {
 		if str != "" {
 			r = append(r, str)
 		}

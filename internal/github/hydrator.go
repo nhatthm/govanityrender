@@ -48,7 +48,7 @@ func (h *Hydrator) Hydrate(s *site.Site) error {
 
 	wg := sync.WaitGroup{}
 	errMu := sync.Mutex{}
-	err := (error)(nil)
+	err := error(nil)
 
 	wg.Add(h.numWorkers)
 

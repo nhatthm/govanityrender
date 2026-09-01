@@ -5,13 +5,16 @@ linters:
   default: all
   disable:
     - exhaustruct
+    - exhaustruct_v5
     - forbidigo
     - forcetypeassert
     - funcorder
     - gochecknoglobals
+    - gomodguard
     - ireturn
     - lll
     - mnd
+    - noinlineerr
     - nolintlint
     - nonamedreturns
     - paralleltest
@@ -21,6 +24,7 @@ linters:
     - testpackage
     - varnamelen
     - wrapcheck
+    - wsl
   settings:
     depguard:
       rules:

@@ -22,6 +22,8 @@ go get go.nhat.io/vanityrender
 
 ```shell
 $ vanityrender --help
+  -404-tpl string
+    	template file
   -config string
     	config file (default "config.json")
   -homepage-tpl string

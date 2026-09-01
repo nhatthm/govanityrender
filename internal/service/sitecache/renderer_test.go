@@ -54,12 +54,12 @@ func TestRenderder_Render_Success(t *testing.T) {
 
 	actual := fileContent(t, metadataFile)
 	expected := `{
-  "checksum": "123",
   "page_title": "test",
   "page_description": "",
   "hostname": "",
   "source_url": "",
-  "repositories": null
+  "repositories": null,
+  "checksum": "123"
 }`
 
 	assert.Equal(t, expected, actual)

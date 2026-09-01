@@ -27,8 +27,9 @@ var (
 var _ site.Hydrator = (*Hydrator)(nil)
 
 type metadata struct {
-	Checksum string `json:"checksum"`
 	site.Site
+
+	Checksum string `json:"checksum"`
 }
 
 // Hydrator hydrates configuration using the metadata file.
